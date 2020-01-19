@@ -66,9 +66,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'momik_douban.pipelines.MomikDoubanPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'momik_douban.pipelines.RecordSpiderPipeliine': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,3 +90,11 @@ DEFAULT_REQUEST_HEADERS = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+MONGO_HOST = "39.106.192.131"  # 主机IP
+MONGO_PORT = 27017  # 端口号
+MONGO_DB = "hexo_blog"  # 库名
+MONGO_COLL = "record_movies"  # collection名
+MONGO_USER = "momik_hexo" #用户名
+MONGO_PSW = "123456" #用户密码
