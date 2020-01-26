@@ -1,7 +1,0 @@
-db.createUser(
-  {
-    user: "momik",
-    pwd: "Iamapig0.0",
-    roles: [ { role: "userAdminAnyDatabase", db: "hexo_blog" } ]
-  }
-)

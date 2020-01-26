@@ -18,11 +18,11 @@ class RecordSpider(scrapy.Spider):
 				title = title[1:3]
 				title[1] = title[1].replace('\n','').strip()
 			item['title'] = "".join(title) # .replace(' / ','/').replace(' /','/').replace('/ ','/')
-			item['href'] = sel.css('.info .title a::attr(href)').extract()
-			item['pic'] = sel.css('.pic img::attr(src)').extract()
-			item['intro'] = sel.css('.info .intro::text').extract()
-			item['date'] = sel.css('.info li .date::text').extract()
-			item['rating'] = sel.css('.info li:last-child span:first-of-type::attr(class)').extract()
+			item['href'] = sel.css('.info .title a::attr(href)')[0].extract()
+			item['pic'] = sel.css('.pic img::attr(src)')[0].extract()
+			item['intro'] = sel.css('.info .intro::text')[0].extract()
+			item['date'] = sel.css('.info li .date::text')[0].extract()
+			item['rating'] = sel.css('.info li:last-child span:first-of-type::attr(class)')[0].extract()
 			yield item
 
 		next = response.css('.article .paginator span.next a::attr(href)').extract()
