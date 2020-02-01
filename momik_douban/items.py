@@ -21,3 +21,5 @@ class DoubanRecordItem(scrapy.Item):
 	intro = scrapy.Field()
 	date = scrapy.Field()
 	rating = scrapy.Field()
+	type = scrapy.Field()
+	comment = scrapy.Field()

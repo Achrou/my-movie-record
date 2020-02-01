@@ -4,7 +4,7 @@ from momik_douban.items import DoubanRecordItem
 
 class RecordSpider(scrapy.Spider):
 	name = "douban_record"
-	start_urls = ["https://movie.douban.com/people/203204069/collect"]
+	start_urls = ["https://movie.douban.com/people/203204069/collect","https://movie.douban.com/people/203204069/wish","https://movie.douban.com/people/203204069/do"]
 
 	def parse(self,response):
 		result = response.css('.article .grid-view div.item')
@@ -22,7 +22,16 @@ class RecordSpider(scrapy.Spider):
 			item['pic'] = sel.css('.pic img::attr(src)')[0].extract()
 			item['intro'] = sel.css('.info .intro::text')[0].extract()
 			item['date'] = sel.css('.info li .date::text')[0].extract()
-			item['rating'] = sel.css('.info li:last-child span:first-of-type::attr(class)')[0].extract()
+			item['type'] = response.url.split('/')[-1].split('?')[0]
+			item['rating']=''
+			item['comment']=''
+			if item['type'] == 'collect':
+				rating = sel.css('.info li:nth-child(3) span[class^="rating"]::attr(class)')
+				if len(rating):
+					item['rating'] = rating[0].extract()
+				comment = sel.css('.info li span.comment::text')
+				if len(comment):
+					item['comment'] = comment[0].extract()
 			yield item
 
 		next = response.css('.article .paginator span.next a::attr(href)').extract()
