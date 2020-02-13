@@ -13,13 +13,14 @@ class MomikDoubanItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+
 class DoubanRecordItem(scrapy.Item):
-	'豆瓣个人观影记录Item'
-	title = scrapy.Field()
-	href = scrapy.Field()
-	pic = scrapy.Field()
-	intro = scrapy.Field()
-	date = scrapy.Field()
-	rating = scrapy.Field()
-	type = scrapy.Field()
-	comment = scrapy.Field()
+    title = scrapy.Field()
+    href = scrapy.Field()
+    pic = scrapy.Field()
+    intro = scrapy.Field()
+    date = scrapy.Field()
+    rating = scrapy.Field()
+    type = scrapy.Field()
+    comment = scrapy.Field()
+    modiTime = scrapy.Field()

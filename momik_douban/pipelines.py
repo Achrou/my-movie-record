@@ -27,6 +27,7 @@ class RecordSpiderPipeline(object):
             mongo_user=crawler.settings.get('MONGO_USER'),
             mongo_psw=crawler.settings.get('MONGO_PSW'),
         )
+    
     def process_item(self, item, spider):
         postItem = dict(item)  # 把item转化成字典形式
         self.coll.update_one({'title':postItem['title']},{'$set':postItem},upsert=True)  # 向数据库插入一条记录
