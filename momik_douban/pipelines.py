@@ -34,5 +34,4 @@ class RecordSpiderPipeline(object):
     def process_item(self, item, spider):
         postItem = dict(item)
         self.coll.update_one({'title': postItem['title']}, {'$set': postItem}, upsert=True)
-        # 会在控制台输出原item数据，可以选择不写
         return item

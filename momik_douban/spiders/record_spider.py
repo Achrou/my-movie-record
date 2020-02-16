@@ -20,7 +20,8 @@ class RecordSpider(scrapy.Spider):
                 title = title[1:3]
                 title[1] = title[1].replace('\n', '').strip()
             item['title'] = "".join(title)  # .replace(' / ','/').replace(' /','/').replace('/ ','/')
-            item['href'] = sel.css('.info .title a::attr(href)')[0].extract()
+            href = sel.css('.info .title a::attr(href)')[0].extract()
+            item['href'] = href
             item['pic'] = sel.css('.pic img::attr(src)')[0].extract()
             item['intro'] = sel.css('.info .intro::text')[0].extract()
             item['date'] = sel.css('.info li .date::text')[0].extract()
@@ -35,10 +36,16 @@ class RecordSpider(scrapy.Spider):
                 if len(comment):
                     item['comment'] = comment[0].extract()
             item["modiTime"] = time.time()
-            yield item
+
+            yield scrapy.Request(url=href, meta={"item": item}, callback=self.parse_detail, dont_filter=True)
 
         next = response.css('.article .paginator span.next a::attr(href)').extract()
         if next:
             next = next[0]
             next = "https://movie.douban.com" + next
             yield scrapy.Request(url=next, callback=self.parse)
+
+    def parse_detail(self, response):
+        item = response.meta["item"]
+        item["ratingNum"] = response.css(".rating_self .rating_num::text")[0].extract()
+        yield item
