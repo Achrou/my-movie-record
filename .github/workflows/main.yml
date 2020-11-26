@@ -32,4 +32,4 @@ jobs:
         pip install Scrapy
     - name: Run project
       run: |
-        ls
+        scrapy crawl douban_record
