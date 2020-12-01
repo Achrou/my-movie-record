@@ -9,11 +9,6 @@ import os
 from momik_douban.GistClient import GistClient
 
 
-class MomikDoubanPipeline(object):
-    def process_item(self, item, spider):
-        return item
-
-
 class JsonPipeline(object):
     def __init__(self, gist_key, gist_id):
         print('GIST_KEY:', gist_key, 'GIST_ID:', gist_id)
@@ -30,22 +25,18 @@ class JsonPipeline(object):
             gist_id=os.getenv('GIST_ID') if len(gist_id) == 0 else gist_id
         )
 
-        def process_item(self, item, spider):
-            key = dict(item)['type']
-            print('当前类型：', key)
-            if not self.files.__contains__(key):
-                self.files[key] = {'line': 1, 'page': 1, 'items': []}
-            file = self.files[key]
-            file['items'].append(dict(item))
-            if file['line'] % 15 == 0:
-                file_name = 'item_' + key + '_' + str(file['page']) + '.json'
-                result = self.gclient.update(self.gist_id,
-                                             {"files": {file_name: {
-                                                 "content": json.dumps(file['items'], ensure_ascii=False)}}})
-                print('更新结果 --->', result)
-                file['page'] += 1
-                file['items'] = []
-            file['line'] += 1
-            print('当前file对象 --->', file)
-
-            return item
+    def process_item(self, item, spider):
+        key = item['type']
+        if not self.files.__contains__(key):
+            self.files[key] = {'line': 1, 'page': 1, 'items': []}
+        file = self.files[key]
+        file['items'].append(dict(item))
+        if file['line'] % 15 == 0:
+            file_name = 'item_' + key + '_' + str(file['page']) + '.json'
+            self.gclient.update(self.gist_id,
+                                {"files": {file_name: {
+                                    "content": json.dumps(file['items'], ensure_ascii=False)}}})
+            file['page'] += 1
+            file['items'] = []
+        file['line'] += 1
+        return item
