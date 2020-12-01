@@ -29,13 +29,13 @@ class JsonPipeline(object):
             if not self.files.__contains__(key):
                 self.files[key] = {'line': 1, 'page': 1, 'items': []}
             file = self.files[key]
-            file.items.append(dict(item))
-            if file.line % 15 == 0:
-                file_name = 'item_' + key + '_' + str(file.page) + '.json'
+            file['items'].append(dict(item))
+            if file['line'] % 15 == 0:
+                file_name = 'item_' + key + '_' + str(file['page']) + '.json'
                 self.gclient.update(self.gist_id,
-                                    {"files": {file_name: {"content": json.dumps(file.items, ensure_ascii=False)}}})
-                file.items.page += 1
-                file.items = []
-            file.items.line += 1
+                                    {"files": {file_name: {"content": json.dumps(file['items'], ensure_ascii=False)}}})
+                file['page'] += 1
+                file['items'] = []
+            file['line'] += 1
 
             return item
