@@ -4,56 +4,35 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# import pymongo
 import json
-
-
-class MomikDoubanPipeline(object):
-    def process_item(self, item, spider):
-        return item
+from momik_douban.GistClient import GistClient
 
 
 class JsonPipeline(object):
-    def __init__(self):
-        self.page = 1
-        self.line = 1
-        self.file = open('items.json', 'wb')
+    def __init__(self, gist_key, gist_id):
+        self.gclient = GistClient(gist_key)
+        self.gist_id = gist_id
+        self.files = {}
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            gist_key=crawler.settings.get('GIST_KEY'),
+            gist_id=crawler.settings.get('GIST_ID')
+        )
 
     def process_item(self, item, spider):
-        # if self.line % 15 == 1 and self.page>1:
-        #     print('哈哈哈哈哈哈哈哈'+self.page)
-        #     self.page = self.page + 1
-        #     self.file = open('items_' + self.page + '.json', 'wb')
-        line = json.dumps(dict(item)) + "\n,"
-        self.file.write(line.encode('utf-8'))
-        # self.line = self.line+1
+        key = item['type']
+        if not self.files.__contains__(key):
+            self.files[key] = {'line': 1, 'page': 1, 'items': []}
+        file = self.files[key]
+        file.items.append(dict(item))
+        if file.line % 15 == 0:
+            file_name = 'item_' + key + '_' + str(file.page) + '.json'
+            self.gclient.update(self.gist_id,
+                                {"files": {file_name: {"content": json.dumps(file.items, ensure_ascii=False)}}})
+            file.items.page += 1
+            file.items = []
+        file.items.line += 1
 
         return item
-
-
-# class RecordSpiderPipeline(object):
-#     def __init__(self, mongo_host, mongo_port, mongo_db, mongo_coll, mongo_user, mongo_psw):
-#         # 链接数据库
-#         client = pymongo.MongoClient(
-#             host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
-#         self.db = client[mongo_db]
-#         self.coll = self.db[mongo_coll]
-#         # 删除全部电影记录
-#         self.coll.delete_many({})
-
-#     @classmethod
-#     def from_crawler(cls, crawler):
-#         return cls(
-#             mongo_host=crawler.settings.get('MONGO_HOST'),
-#             mongo_port=crawler.settings.get('MONGO_PORT'),
-#             mongo_db=crawler.settings.get('MONGO_DB'),
-#             mongo_coll=crawler.settings.get('MONGO_COLL'),
-#             mongo_user=crawler.settings.get('MONGO_USER'),
-#             mongo_psw=crawler.settings.get('MONGO_PSW'),
-#         )
-
-#     def process_item(self, item, spider):
-#         postItem = dict(item)
-#         self.coll.update_one({'title': postItem['title']}, {
-#                              '$set': postItem}, upsert=True)
-#         return item
