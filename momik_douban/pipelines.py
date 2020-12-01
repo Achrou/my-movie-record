@@ -11,6 +11,7 @@ from momik_douban.GistClient import GistClient
 
 class JsonPipeline(object):
     def __init__(self, gist_key, gist_id):
+        print('GIST_KEY:', gist_key, 'GIST_ID:', gist_id)
         self.gclient = GistClient(gist_key)
         self.gist_id = gist_id
         self.files = {}
@@ -32,10 +33,13 @@ class JsonPipeline(object):
             file['items'].append(dict(item))
             if file['line'] % 15 == 0:
                 file_name = 'item_' + key + '_' + str(file['page']) + '.json'
-                self.gclient.update(self.gist_id,
-                                    {"files": {file_name: {"content": json.dumps(file['items'], ensure_ascii=False)}}})
+                result = self.gclient.update(self.gist_id,
+                                             {"files": {file_name: {
+                                                 "content": json.dumps(file['items'], ensure_ascii=False)}}})
+                print('更新结果 --->', result)
                 file['page'] += 1
                 file['items'] = []
             file['line'] += 1
+            print('当前file对象 --->', file)
 
             return item
