@@ -27,6 +27,7 @@ class JsonPipeline(object):
 
         def process_item(self, item, spider):
             key = item['type']
+            print('当前类型：', key)
             if not self.files.__contains__(key):
                 self.files[key] = {'line': 1, 'page': 1, 'items': []}
             file = self.files[key]
