@@ -9,6 +9,11 @@ import os
 from momik_douban.GistClient import GistClient
 
 
+class MomikDoubanPipeline(object):
+    def process_item(self, item, spider):
+        return item
+
+
 class JsonPipeline(object):
     def __init__(self, gist_key, gist_id):
         print('GIST_KEY:', gist_key, 'GIST_ID:', gist_id)
@@ -26,7 +31,7 @@ class JsonPipeline(object):
         )
 
         def process_item(self, item, spider):
-            key = item['type']
+            key = dict(item)['type']
             print('当前类型：', key)
             if not self.files.__contains__(key):
                 self.files[key] = {'line': 1, 'page': 1, 'items': []}
