@@ -8,12 +8,15 @@ import json
 import os
 from scrapy import signals
 from momik_douban.GistClient import GistClient
+from github import Github
 
 
 class JsonPipeline(object):
     def __init__(self, gist_key, gist_id):
         print('GIST_KEY:', gist_key, 'GIST_ID:', gist_id)
         self.gclient = GistClient(gist_key)
+        self.g = Github(gist_key)
+        self.repo = self.g.get_repo("Achrou/my-movie-record")
         self.gist_id = gist_id
         self.files = {}
 
@@ -49,17 +52,19 @@ class JsonPipeline(object):
                 page_items.append(item)
                 if line % 15 == 0:
                     file_name = 'item_' + key + '_' + str(page) + '.json'
-                    self.gclient.update(self.gist_id,
-                                        {"files": {file_name: {
-                                            "content": json.dumps(page_items, ensure_ascii=False)}}})
+                    # self.gclient.update(self.gist_id,
+                    #                     {"files": {file_name: {
+                    #                         "content": json.dumps(page_items, ensure_ascii=False)}}})
+                    self.saveData(file_name, json.dumps(page_items, ensure_ascii=False))
                     page += 1
                     page_items = []
                 line += 1
 
         print('采集结果--->:', record_count)
-        self.gclient.update(self.gist_id,
-                            {"files": {'record_count': {
-                                "content": json.dumps(record_count, ensure_ascii=False)}}})
+        # self.gclient.update(self.gist_id,
+        #                     {"files": {'record_count': {
+        #                         "content": json.dumps(record_count, ensure_ascii=False)}}})
+        self.saveData("record_count", json.dumps(record_count, ensure_ascii=False))
 
     def process_item(self, item, spider):
         key = item['type']
@@ -67,3 +72,10 @@ class JsonPipeline(object):
             self.files[key] = []
         self.files[key].append(dict(item))
         return item
+
+    def saveData(self, file_name, content):
+        try:
+            contents = self.repo.get_contents(file_name, ref="db")
+            self.repo.update_file(contents.path, "update data", content, contents.sha, branch="db")
+        except:
+            self.repo.create_file(file_name, "update data", content, branch="db")
