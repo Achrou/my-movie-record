@@ -41,16 +41,16 @@ class JsonPipeline(object):
         record_count = {}
 
         for key in self.files.keys():
-            # items = self.files[key]
-            record_count[key] = len(self.files[key])
-            self.files[key].sort(key=lambda t: t['date'], reverse=True)
+            items = self.files[key]
+            record_count[key] = len(items)
+            items.sort(key=lambda t: t['date'], reverse=True)
 
             line = 1
             page = 1
             page_items = []
-            for item in self.files[key]:
+            for item in items:
                 page_items.append(item)
-                if line % 15 == 0:
+                if line % 15 == 0 or line == len(items) or line == len(items) - page * 15:
                     file_name = 'item_' + key + '_' + str(page) + '.json'
                     # self.gclient.update(self.gist_id,
                     #                     {"files": {file_name: {
