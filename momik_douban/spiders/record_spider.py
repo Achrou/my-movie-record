@@ -47,5 +47,6 @@ class RecordSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = response.meta["item"]
-        item["ratingNum"] = response.css(".rating_self .rating_num::text")[0].extract()
+        elem = response.css(".rating_self .rating_num::text")
+        item["ratingNum"] = elem[0].extract() if len(elem) > 0 else 0
         yield item

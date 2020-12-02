@@ -62,9 +62,9 @@ class JsonPipeline(object):
 
         print('采集结果--->:', record_count)
         # self.gclient.update(self.gist_id,
-        #                     {"files": {'record_count': {
+        #                     {"files": {'record_count.json': {
         #                         "content": json.dumps(record_count, ensure_ascii=False)}}})
-        self.saveData("record_count", json.dumps(record_count, ensure_ascii=False))
+        self.saveData("record_count.json", json.dumps(record_count, ensure_ascii=False))
 
     def process_item(self, item, spider):
         key = item['type']
